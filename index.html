@@ -63,14 +63,19 @@ loader
   var numberOfBlobs = 6,
       spacing = 48,
       xOffset = 150;
+      speed = 2,
+      direction = 1;
+      blobs = [];
       for (var i = 0; i < numberOfBlobs; i++) {
         var blob = new Sprite(id["blob.png"]);
         var x = spacing * i + xOffset;
         var y = randomInt(0, stage.height - blob.height);
         blob.x = x;
         blob.y = y;
+        blob.vy = speed * direction;
+        direction *= -1;
+        blobs.push(blob);
         stage.addChild(blob);
-
         gameLoop();
   }
 
