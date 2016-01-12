@@ -20,6 +20,8 @@ var Rectangle = PIXI.Rectangle;
 var stage = new Container();
 var renderer = autoDetectRenderer(512, 512);
 var dungeon, explorer, treasure, door, id;
+var state = play;
+var keyObject = keyboard(asciiKeyCodeNumber);
 document.body.appendChild(renderer.view);
 
 loader
@@ -27,6 +29,7 @@ loader
   .load(setup);
 
   function setup() {
+    state = play;
     var dungeonTexture = TextureCache["dungeon.png"];
   dungeon = new Sprite(dungeonTexture);
   stage.addChild(dungeon);
@@ -35,6 +38,8 @@ loader
     resources["images/treasureHunter.json"].textures["explorer.png"]
   );
   explorer.x = 68;
+  explorer.vx = -1;
+  explorer.vy = -1;
 
   explorer.y = stage.height / 2 - explorer.height / 2;
  stage.addChild(explorer);
@@ -78,10 +83,11 @@ loader
 
   //Loop this function 60 times per second
   requestAnimationFrame(gameLoop);
+  state();
 
   //Update the cat's velocity
-  explorer.vx = 1;
-  explorer.vy = 1;
+  explorer.vx = 0.5;
+  explorer.vy = 0;
 
   //Apply the velocity values to the cat's
   //position to make it move
@@ -90,6 +96,12 @@ loader
 
   //Render the stage
   renderer.render(stage);
+}
+
+function play() {
+
+  explorer.vx = 1
+ explorer.x += explorer.vx;
 }
 
 
