@@ -21,7 +21,10 @@ var stage = new Container();
 var renderer = autoDetectRenderer(512, 512);
 var dungeon, explorer, treasure, door, id;
 var state = play;
-var keyObject = keyboard(asciiKeyCodeNumber);
+var left = keyboard(37),
+      up = keyboard(38),
+      right = keyboard(39),
+      down = keyboard(40);
 document.body.appendChild(renderer.view);
 
 loader
@@ -38,8 +41,8 @@ loader
     resources["images/treasureHunter.json"].textures["explorer.png"]
   );
   explorer.x = 68;
-  explorer.vx = -1;
-  explorer.vy = -1;
+  explorer.vx = 0;
+  explorer.vy = 0;
 
   explorer.y = stage.height / 2 - explorer.height / 2;
  stage.addChild(explorer);
@@ -79,6 +82,43 @@ loader
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  function keyboard(keyCode) {
+  var key = {};
+  key.code = keyCode;
+  key.isDown = false;
+  key.isUp = true;
+  key.press = undefined;
+  key.release = undefined;
+  //The `downHandler`
+  key.downHandler = function(event) {
+    if (event.keyCode === key.code) {
+      if (key.isUp && key.press) key.press();
+      key.isDown = true;
+      key.isUp = false;
+    }
+    event.preventDefault();
+  };
+
+  //The `upHandler`
+  key.upHandler = function(event) {
+    if (event.keyCode === key.code) {
+      if (key.isDown && key.release) key.release();
+      key.isDown = false;
+      key.isUp = true;
+    }
+    event.preventDefault();
+  };
+
+  //Attach event listeners
+  window.addEventListener(
+    "keydown", key.downHandler.bind(key), false
+  );
+  window.addEventListener(
+    "keyup", key.upHandler.bind(key), false
+  );
+  return key;
+}
+
   function gameLoop(){
 
   //Loop this function 60 times per second
@@ -86,7 +126,7 @@ loader
   state();
 
   //Update the cat's velocity
-  explorer.vx = 0.5;
+  explorer.vx = 0;
   explorer.vy = 0;
 
   //Apply the velocity values to the cat's
@@ -98,10 +138,63 @@ loader
   renderer.render(stage);
 }
 
+left.press = function() {
+
+    //Change the cat's velocity when the key is pressed
+    explorer.vx = -5;
+    explorer.vy = 0;
+  };
+
+  //Left arrow key `release` method
+  left.release = function() {
+
+    //If the left arrow has been released, and the right arrow isn't down,
+    //and the cat isn't moving vertically:
+    //Stop the cat
+    if (!right.isDown && explorer.vy === 0) {
+      explorer.vx = 0;
+    }
+  };
+
+  //Up
+  up.press = function() {
+    explorer.vy = -5;
+    explorer.vx = 0;
+  };
+  up.release = function() {
+    if (!down.isDown && explorer.vx === 0) {
+      explorer.vy = 0;
+    }
+  };
+
+  //Right
+  right.press = function() {
+    explorer.vx = 5;
+    explorer.vy = 0;
+  };
+  right.release = function() {
+    if (!left.isDown && explorer.vy === 0) {
+      explorer.vx = 0;
+    }
+  };
+
+  //Down
+  down.press = function() {
+    explorer.vy = 5;
+    explorer.vx = 0;
+  };
+  down.release = function() {
+    if (!up.isDown && explorer.vx === 0) {
+      explorer.vy = 0;
+    }
+  };
+
+  state = play;
+
 function play() {
 
-  explorer.vx = 1
- explorer.x += explorer.vx;
+  explorer.x += explorer.vx;
+  explorer.y += explorer.vy
 }
 
 
