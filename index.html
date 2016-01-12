@@ -62,6 +62,8 @@ loader
         blob.x = x;
         blob.y = y;
         stage.addChild(blob);
+
+        gameLoop();
   }
 
 
@@ -71,6 +73,24 @@ loader
   function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+
+  function gameLoop(){
+
+  //Loop this function 60 times per second
+  requestAnimationFrame(gameLoop);
+
+  //Update the cat's velocity
+  explorer.vx = 1;
+  explorer.vy = 1;
+
+  //Apply the velocity values to the cat's
+  //position to make it move
+  explorer.x += explorer.vx;
+  explorer.y += explorer.vy;
+
+  //Render the stage
+  renderer.render(stage);
+}
 
 
 
